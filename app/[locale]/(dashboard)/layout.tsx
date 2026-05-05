@@ -77,7 +77,7 @@ function UserMenu() {
             <span>Settings</span>
           </Link>
         </DropdownMenuItem>
-        <form action={async (formData) => { await handleSignOut(formData); }} className="w-full">
+        <form action={async () => { await handleSignOut(); }} className="w-full">
           <button type="submit" className="flex w-full">
             <DropdownMenuItem className="w-full flex-1 cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10">
               <LogOut className="mr-2 h-4 w-4" />

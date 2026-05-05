@@ -124,7 +124,7 @@ export default function SecurityPage() {
           <p className="text-sm mb-4">
             {t('delete_account_desc')}
           </p>
-          <form action={deleteAction} className="space-y-4">
+          <form action={async (formData) => { await deleteAction(formData); }} className="space-y-4">
             <div>
               <Label htmlFor="delete-password" className="mb-2">
                 {t('confirm_password_label')}

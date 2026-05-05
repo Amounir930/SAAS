@@ -191,7 +191,7 @@ function ManageSubscription() {
                 </Link>
 
                 {teamData?.stripeCustomerId && (
-                    <form action={customerPortalAction} className="w-full sm:w-auto">
+                    <form action={async (formData) => { await customerPortalAction(formData); }} className="w-full sm:w-auto">
                         <Button type="submit" variant="outline" className="w-full">
                             <CreditCard className="mr-2 h-4 w-4" />
                             {t('billing_portal')}
@@ -1012,7 +1012,7 @@ function InviteTeamMember() {
         <CardTitle>{t('invite_section_title')}</CardTitle>
       </CardHeader>
       <CardContent>
-        <form action={inviteAction} className="space-y-4">
+        <form action={async (formData) => { await inviteAction(formData); }} className="space-y-4">
           <div>
             <Label htmlFor="email" className="mb-2">
               {t('email_label')}

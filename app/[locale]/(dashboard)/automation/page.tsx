@@ -75,7 +75,7 @@ export default async function AutomationListPage() {
                   <Button variant="outline" size="sm">{t('edit_flow_btn')}</Button>
                 </Link>
                 
-                <form action={deleteAutomation.bind(null, bot.id)}>
+                <form action={async () => { await deleteAutomation(bot.id); }}>
                   <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10 h-8 w-8">
                     <Trash2 className="h-4 w-4" />
                   </Button>

@@ -13,7 +13,6 @@ import {
   QrCode,
   Bot,
   Terminal,
-  Phone,
   ChevronRight,
   LifeBuoy
 } from 'lucide-react';
@@ -25,7 +24,7 @@ import type { MemberPermissions } from '@/lib/permissions';
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 type MembershipData = { role: string; permissions: MemberPermissions };
 
-const RESTRICTED_SETTINGS: string[] = ['/settings/connect', '/settings/ai', '/settings/voice', '/settings/developers'];
+const RESTRICTED_SETTINGS: string[] = ['/settings/connect', '/settings/ai', '/settings/developers'];
 
 export default function SettingsLayout({
   children
@@ -66,13 +65,6 @@ export default function SettingsLayout({
       icon: Bot,
       label: t('nav.ai'),
       description: t('nav.ai_desc'),
-      restricted: true,
-    },
-    {
-      href: '/settings/voice',
-      icon: Phone,
-      label: t('nav.voice'),
-      description: t('nav.voice_desc'),
       restricted: true,
     },
     {

@@ -10,7 +10,6 @@ import {
   BarChart3, 
   Settings, 
   Zap, 
-  Phone, 
   Send,
   FileText,
 } from 'lucide-react';
@@ -24,7 +23,6 @@ const navItems = [
   { href: '/campaigns', icon: Send, labelKey: 'campaigns' },
   { href: '/templates', icon: FileText, labelKey: 'templates' },
   { href: '/automation', icon: Zap, labelKey: 'automation' },
-  { href: '/calls', icon: Phone, labelKey: 'calls' },
   { href: '/analytics', icon: BarChart3, labelKey: 'analytics' },
   { href: '/settings', icon: Settings, labelKey: 'settings' },
 ];

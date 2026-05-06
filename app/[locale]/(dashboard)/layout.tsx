@@ -32,15 +32,14 @@ function UserMenu() {
   async function handleSignOut() {
     await signOut();
     mutate('/api/user');
-    router.push('/');
+    router.push('/sign-in');
   }
 
   if (!user) {
     return (
       <>
-
         <Button asChild className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground">
-          <Link href="/sign-up">Sign Up</Link>
+          <Link href="/sign-in">Sign In</Link>
         </Button>
       </>
     );

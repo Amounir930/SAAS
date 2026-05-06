@@ -8,8 +8,8 @@ const FiltersSchema = z.object({
   search: z.string().optional(),
   role: z.string().optional(),
   teamId: z.string().optional(),
-  page: z.string().regex(/^\d+$/).transform(Number).default('1'),
-  perPage: z.string().regex(/^\d+$/).transform(Number).default('20'),
+  page: z.coerce.number().default(1),
+  perPage: z.coerce.number().default(20),
 });
 
 /**

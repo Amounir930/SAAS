@@ -19,7 +19,6 @@ import {
 import { comparePasswords, hashPassword, setSession } from '@/lib/auth/session';
 import { redirect } from 'next/navigation';
 import { cookies, headers } from 'next/headers';
-import { createCheckoutSession } from '@/lib/payments/stripe';
 import { getUser, getUserWithTeam } from '@/lib/db/queries';
 import {
   validatedAction,
@@ -27,8 +26,7 @@ import {
 } from '@/lib/auth/middleware';
 
 import { sendInvitationEmail } from '@/lib/email';
-import { getFreePlan } from '@/lib/db/queries';
-import { enforceLimit } from '@/lib/limits';
+
 import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 
 async function logActivity(
@@ -103,11 +101,7 @@ export const signIn = validatedAction(signInSchema, async (data, formData) => {
     logActivity(foundTeam?.id, foundUser.id, ActivityType.SIGN_IN)
   ]);
 
-  const redirectTo = formData.get('redirect') as string | null;
-  if (redirectTo === 'checkout') {
-    const priceId = formData.get('priceId') as string;
-    return createCheckoutSession({ team: foundTeam, priceId });
-  }
+
 
   redirect('/dashboard');
 });
@@ -205,16 +199,6 @@ export const signUp = validatedAction(signUpSchema, async (data, formData) => {
 
     [createdTeam] = await db.insert(teams).values(newTeam).returning();
 
-    const freePlan = await getFreePlan();
-    if (freePlan) {
-      await db.update(teams)
-        .set({ 
-          planId: freePlan.id,
-          subscriptionStatus: 'active' 
-        })
-        .where(eq(teams.id, createdTeam.id));
-    }
-
     if (!createdTeam) {
       return {
         error: 'Failed to create team. Please try again.',
@@ -241,11 +225,7 @@ export const signUp = validatedAction(signUpSchema, async (data, formData) => {
     setSession(createdUser)
   ]);
 
-  const redirectTo = formData.get('redirect') as string | null;
-  if (redirectTo === 'checkout') {
-    const priceId = formData.get('priceId') as string;
-    return createCheckoutSession({ team: createdTeam, priceId });
-  }
+
 
   redirect('/dashboard');
 });
@@ -440,11 +420,7 @@ export const inviteTeamMember = validatedActionWithUser(
       return { error: 'User is not part of a team' };
     }
 
-    try {
-      await enforceLimit(userWithTeam.teamId, 'users');
-    } catch (e: any) {
-      return { error: e.message };
-    }
+
 
     const team = await db.query.teams.findFirst({
       where: eq(teams.id, userWithTeam.teamId),

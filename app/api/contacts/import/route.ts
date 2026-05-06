@@ -17,7 +17,7 @@ const ImportSchema = z.object({
     agentEmail: z.string().email().optional(),
     department: z.string().optional(),
     tags: z.array(z.string()).optional(),
-    customData: z.record(z.any()).optional(),
+    customData: z.record(z.string(), z.any()).optional(),
   })).max(1000)
 });
 

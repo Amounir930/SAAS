@@ -354,7 +354,7 @@ export async function processAIMessage(
     logAIInteraction({
       teamId,
       chatId,
-      eventType: 'ai_fatal_error',
+      eventType: 'ai_error',
       error: error.message,
     });
     return false;

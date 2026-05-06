@@ -9,7 +9,6 @@ import {
   CardTitle,
   CardFooter
 } from '@/components/ui/card';
-import { customerPortalAction } from '@/lib/payments/actions';
 import { useActionState, useState } from 'react';
 import { TeamDataWithMembers, User, Invitation, Department } from '@/lib/db/schema';
 import { removeTeamMember, inviteTeamMember, revokeInvitation, resendInvitation } from '@/app/[locale]/(login)/actions';
@@ -84,127 +83,7 @@ import { useTranslations } from 'next-intl';
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-function SubscriptionSkeleton() {
-  const t = useTranslations('Settings');
-  return (
-    <Card className="mb-8 h-[140px]">
-      <CardHeader>
-        <CardTitle>{t('subscription_title')}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="animate-pulse space-y-4 mt-1">
-          <div className="h-4 w-3/4 bg-muted rounded"></div>
-          <div className="h-3 w-1/2 bg-muted rounded"></div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
 
-function ManageSubscription() {
-  const t = useTranslations('Settings');
-  const { data: teamData } = useSWR<TeamDataWithMembers>('/api/team', fetcher);
-
-  const renderPlanStatus = () => {
-    if (!teamData) return <span className="text-muted-foreground">{t('loading')}</span>;
-
-    const endDate = teamData.trialEndsAt
-      ? new Date(teamData.trialEndsAt).toLocaleDateString()
-      : '';
-
-    if (teamData.subscriptionStatus === 'trialing') {
-        return (
-            <div className="flex flex-col gap-1.5 mt-2">
-                <div className="flex items-center gap-2">
-                    <Badge variant="secondary" className="bg-blue-100 text-blue-700 hover:bg-blue-100 border-blue-200 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20">
-                        <Clock className="w-3 h-3 mr-1" /> {t('trial_active')}
-                    </Badge>
-                    {teamData.isCanceled && (
-                        <Badge variant="destructive" className="bg-orange-100 text-orange-700 hover:bg-orange-100 border-orange-200 dark:bg-orange-500/10 dark:text-orange-400 dark:border-orange-500/20">
-                            {t('canceled')}
-                        </Badge>
-                    )}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                    {teamData.isCanceled
-                        ? `${t('trial_ends', { date: endDate })}`
-                        : `${t('trial_ends', { date: endDate })}`}
-                </p>
-            </div>
-        );
-    }
-
-    if (teamData.subscriptionStatus === 'active') {
-        if (teamData.isCanceled) {
-            return (
-                <div className="flex flex-col gap-1.5 mt-2">
-                    <Badge variant="secondary" className="w-fit bg-orange-100 text-orange-800 hover:bg-orange-100 border-orange-200 dark:bg-orange-500/10 dark:text-orange-400 dark:border-orange-500/20">
-                        <AlertTriangle className="w-3 h-3 mr-1" /> {t('canceled')}
-                    </Badge>
-                    <p className="text-xs text-muted-foreground">
-                        {endDate}
-                    </p>
-                </div>
-            );
-        }
-        
-        return (
-            <div className="flex flex-col gap-1.5 mt-2">
-                <Badge className="w-fit bg-green-600 hover:bg-green-700 border-transparent text-white dark:bg-green-500/20 dark:text-green-400 dark:border-green-500/30 dark:hover:bg-green-500/30">
-                    <Check className="w-3 h-3 mr-1" /> {t('active')}
-                </Badge>
-            </div>
-        );
-    }
-
-    return (
-        <div className="flex flex-col gap-1.5 mt-2">
-            <Badge variant="outline" className="w-fit text-muted-foreground border-border">
-                {t('free_plan')}
-            </Badge>
-        </div>
-    );
-  };
-
-  return (
-    <Card className="mb-8">
-      <CardHeader>
-        <CardTitle>{t('subscription_title')}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-            <div className="flex-1">
-              <div className="flex items-baseline gap-2">
-                <p className="font-medium text-lg">{t('current_plan')}:</p>
-                <span className="text-xl font-bold text-primary">{teamData?.planName || t('free_plan_name')}</span>
-              </div>
-              
-              {renderPlanStatus()}
-            </div>
-            
-            <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-                <Link href="/pricing" className="w-full sm:w-auto">
-                    <Button variant="default" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
-                        {teamData?.planName ? t('change_plan_btn') : t('upgrade_btn')}
-                    </Button>
-                </Link>
-
-                {teamData?.stripeCustomerId && (
-                    <form action={async (formData) => { await customerPortalAction(formData); }} className="w-full sm:w-auto">
-                        <Button type="submit" variant="outline" className="w-full">
-                            <CreditCard className="mr-2 h-4 w-4" />
-                            {t('billing_portal')}
-                        </Button>
-                    </form>
-                )}
-            </div>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
 
 function TeamMembersSkeleton() {
   const t = useTranslations('Settings');
@@ -1083,9 +962,6 @@ export default function SettingsPage() {
   return (
     <section className="flex-1 p-4 lg:p-8">
       <h1 className="text-lg lg:text-2xl font-medium mb-6">{t('team_title')}</h1>
-      <Suspense fallback={<SubscriptionSkeleton />}>
-        <ManageSubscription />
-      </Suspense>
       
       <Suspense fallback={<TeamMembersSkeleton />}>
         <TeamMembers />

@@ -55,6 +55,7 @@ export interface SendResult {
   success: boolean;
   messageId?: string;
   error?: string;
+  code?: string;
   raw?: Record<string, any>;
   timestamp?: number;
 }

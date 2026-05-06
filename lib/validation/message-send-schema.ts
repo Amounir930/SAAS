@@ -4,7 +4,7 @@ import { z } from 'zod';
  * Nested schema for quoted messages
  */
 export const QuotedMessageSchema = z.object({
-  id: z.string().optional(),
+  id: z.string().min(1, 'Quoted message ID is required'),
   text: z.string().optional(),
   fromMe: z.boolean().optional(),
 });
@@ -15,16 +15,11 @@ export const QuotedMessageSchema = z.object({
  */
 export const SendMessageSchema = z.object({
   recipientJid: z.string()
-    .min(1, 'Recipient JID is required')
-    .regex(/^[\w.-]+@[\w.-]+\.\w+$/, 'Invalid WhatsApp JID format'),
+    .min(1, 'Recipient JID is required'),
   text: z.string().min(1, 'Message text is required').max(4096),
   isInternal: z.boolean().optional().default(false),
   instanceId: z.number().int().positive().nullable().optional(),
-  quotedMessageData: z.object({
-    id: z.string().optional(),
-    text: z.string().optional(),
-    fromMe: z.boolean().optional(),
-  }).optional().nullable(),
+  quotedMessageData: QuotedMessageSchema.optional().nullable(),
 });
 
 export type SendMessageInput = z.infer<typeof SendMessageSchema>;

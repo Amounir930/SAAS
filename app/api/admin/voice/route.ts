@@ -12,10 +12,6 @@ const VoiceConfigSchema = z.object({
   apiKeySid: z.string().min(1, 'API Key SID is required').optional(),
   apiKeySecret: z.string().min(1, 'API Key Secret is required').optional(),
   twimlAppSid: z.string().nullable().optional(),
-  creditPricePerPack: z.number().min(0).optional(),
-  creditsPerPack: z.number().min(1).optional(),
-  pricePerNumber: z.number().min(0).optional(),
-  paymentGatewayId: z.string().nullable().optional(),
   currency: z.string().min(1).optional(),
   isActive: z.boolean().optional(),
 });
@@ -47,10 +43,6 @@ export async function GET() {
         apiKeySid: maskSecret(config.apiKeySid),
         apiKeySecret: maskSecret(config.apiKeySecret),
         twimlAppSid: config.twimlAppSid ? maskSecret(config.twimlAppSid) : null,
-        creditPricePerPack: config.creditPricePerPack,
-        creditsPerPack: config.creditsPerPack,
-        pricePerNumber: config.pricePerNumber,
-        paymentGatewayId: config.paymentGatewayId,
         currency: config.currency,
         isActive: config.isActive,
         createdAt: config.createdAt,
@@ -105,11 +97,7 @@ export async function PUT(request: Request) {
       if (body.twimlAppSid !== undefined && !isMasked(body.twimlAppSid || '')) {
         updateData.twimlAppSid = body.twimlAppSid;
       }
-      if (body.creditPricePerPack !== undefined) updateData.creditPricePerPack = body.creditPricePerPack;
-      if (body.creditsPerPack !== undefined) updateData.creditsPerPack = body.creditsPerPack;
-      if (body.pricePerNumber !== undefined) updateData.pricePerNumber = body.pricePerNumber;
       if (body.isActive !== undefined) updateData.isActive = body.isActive;
-      if (body.paymentGatewayId !== undefined) updateData.paymentGatewayId = body.paymentGatewayId;
       if (body.currency) updateData.currency = body.currency;
 
       await db
@@ -125,10 +113,6 @@ export async function PUT(request: Request) {
         apiKeySid: body.apiKeySid!,
         apiKeySecret: body.apiKeySecret!,
         twimlAppSid: body.twimlAppSid || null,
-        creditPricePerPack: body.creditPricePerPack ?? 500,
-        creditsPerPack: body.creditsPerPack ?? 100,
-        pricePerNumber: body.pricePerNumber ?? 500,
-        paymentGatewayId: body.paymentGatewayId || null,
         currency: body.currency || 'usd',
         isActive: body.isActive ?? false,
       });

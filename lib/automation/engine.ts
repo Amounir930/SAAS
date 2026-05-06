@@ -47,20 +47,25 @@ const StartNodeDataSchema = z.object({
 const NodeSchema = z.object({
   id: z.string(),
   type: z.string(),
-  data: z.record(z.any()),
+  data: z.record(z.string(), z.any()),
 });
 
 const EdgeSchema = z.object({
   id: z.string(),
   source: z.string(),
   target: z.string(),
-  sourceHandle: z.string().nullable().optional(),
+  sourceHandle: z.string().optional().nullable(),
+  targetHandle: z.string().optional().nullable(),
 });
 
 const FlowDataSchema = z.object({
   nodes: z.array(NodeSchema),
   edges: z.array(EdgeSchema),
 });
+
+export type AutomationNode = z.infer<typeof NodeSchema>;
+export type AutomationEdge = z.infer<typeof EdgeSchema>;
+export type FlowData = z.infer<typeof FlowDataSchema>;
 
 const ProcessAutomationInputSchema = z.object({
   teamId: z.number().int().positive(),
@@ -561,7 +566,7 @@ function getNestedValue(obj: any, path: string): any {
 }
 
 async function processHttpRequest(
-    node: Node,
+    node: AutomationNode,
     session: any,
     flow: FlowData,
     provider: WhatsAppProvider,
@@ -674,7 +679,7 @@ async function moveToNextAuto(session: any, flow: FlowData, currentNodeId: strin
     }
 }
 
-async function processTextOutput(node: Node, provider: WhatsAppProvider, remoteJid: string, teamId: number, chatId: number, variables: Record<string, any>) {
+async function processTextOutput(node: AutomationNode, provider: WhatsAppProvider, remoteJid: string, teamId: number, chatId: number, variables: Record<string, any>) {
     if (node.type === 'message') {
         let text = node.data.label as string;
         text = replaceVariables(text, variables);
@@ -693,7 +698,7 @@ async function processTextOutput(node: Node, provider: WhatsAppProvider, remoteJ
     }
 }
 
-async function processMediaOutput(node: Node, provider: WhatsAppProvider, remoteJid: string, teamId: number, chatId: number, variables: Record<string, any> = {}) {
+async function processMediaOutput(node: AutomationNode, provider: WhatsAppProvider, remoteJid: string, teamId: number, chatId: number, variables: Record<string, any> = {}) {
     const data = node.data as any;
     if (!data.mediaUrl) return;
 
@@ -719,7 +724,7 @@ async function processMediaOutput(node: Node, provider: WhatsAppProvider, remote
     }
 }
 
-async function processInteractiveOutput(node: Node, provider: WhatsAppProvider, remoteJid: string, teamId: number, chatId: number, variables: Record<string, any>) {
+async function processInteractiveOutput(node: AutomationNode, provider: WhatsAppProvider, remoteJid: string, teamId: number, chatId: number, variables: Record<string, any>) {
     const data = node.data as any;
     const bodyText = replaceVariables(data.bodyText || '', variables);
     const footerText = replaceVariables(data.footerText || '', variables);
@@ -738,7 +743,7 @@ async function processInteractiveOutput(node: Node, provider: WhatsAppProvider, 
     await provider.sendInteractive(remoteJid, payload as any);
 }
 
-async function processSaveContact(node: Node, session: any, teamId: number, chatId: number) {
+async function processSaveContact(node: AutomationNode, session: any, teamId: number, chatId: number) {
     const data = node.data as any;
     const variables = (session.variables as Record<string, string>) || {};
     

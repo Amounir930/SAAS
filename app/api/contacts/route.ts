@@ -6,7 +6,7 @@ import { checkRoutePermission } from '@/lib/auth/permissions-guard';
 import { ActivityType, chats, contacts, contactTags } from '@/lib/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { logActivity } from '@/lib/db/activity';
-import { enforceLimit } from '@/lib/limits';
+
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,11 +18,7 @@ export async function POST(request: NextRequest) {
     if (!team || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    try {
-      await enforceLimit(team.id, 'contacts');
-    } catch (e: any) {
-        return NextResponse.json({ error: e.message }, { status: 403 });
-    }
+
 
     const body = await request.json();
     const {

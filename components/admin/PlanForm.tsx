@@ -11,10 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createPlan, updatePlan } from '@/lib/api/admin/plans';
@@ -25,10 +22,6 @@ import { Loader2, Save, X } from 'lucide-react';
 const formSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').max(100),
   description: z.string().max(500).optional(),
-  amount: z.number().min(0, 'Amount must be non-negative'),
-  currency: z.string().length(3),
-  interval: z.enum(['month', 'year']),
-  trialDays: z.number().min(0).max(365),
   maxUsers: z.number().min(1),
   maxContacts: z.number().min(0),
   maxInstances: z.number().min(1),
@@ -37,9 +30,6 @@ const formSchema = z.object({
   isCampaignsEnabled: z.boolean(),
   isTemplatesEnabled: z.boolean(),
   isVoiceCallsEnabled: z.boolean(),
-  stripeProductId: z.string().optional(),
-  stripePriceId: z.string().optional(),
-  gatewayId: z.number().nullable().optional(),
 });
 
 interface PlanFormProps {
@@ -56,10 +46,6 @@ export function PlanForm({ initialData }: PlanFormProps) {
     defaultValues: {
       name: initialData?.name || '',
       description: initialData?.description || '',
-      amount: initialData?.amount || 0,
-      currency: initialData?.currency || 'usd',
-      interval: (initialData?.interval as 'month' | 'year') || 'month',
-      trialDays: initialData?.trialDays || 0,
       maxUsers: initialData?.maxUsers || 1,
       maxContacts: initialData?.maxContacts || 1000,
       maxInstances: initialData?.maxInstances || 1,
@@ -68,9 +54,6 @@ export function PlanForm({ initialData }: PlanFormProps) {
       isCampaignsEnabled: initialData?.isCampaignsEnabled || false,
       isTemplatesEnabled: initialData?.isTemplatesEnabled || false,
       isVoiceCallsEnabled: initialData?.isVoiceCallsEnabled || false,
-      stripeProductId: initialData?.stripeProductId || '',
-      stripePriceId: initialData?.stripePriceId || '',
-      gatewayId: initialData?.gatewayId || null,
     },
   });
 
@@ -85,7 +68,7 @@ export function PlanForm({ initialData }: PlanFormProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-plans'] });
       toast.success(`Plan ${initialData ? 'updated' : 'created'} successfully`);
-      router.push('/admin/billing/plans');
+      router.push('/admin/settings/plans');
     },
     onError: (error) => {
       toast.error('Failed to save plan', {
@@ -108,11 +91,11 @@ export function PlanForm({ initialData }: PlanFormProps) {
             <CardDescription>
               {initialData
                 ? 'Update the plan details below.'
-                : 'Set up a new subscription plan with pricing and feature limits.'}
+                : 'Set up a new feature plan with limits and capabilities.'}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="grid gap-6 md:grid-cols-2">
+            <div className="grid gap-6 md:grid-cols-1">
               <FormField
                 control={form.control}
                 name="name"
@@ -120,32 +103,9 @@ export function PlanForm({ initialData }: PlanFormProps) {
                   <FormItem>
                     <FormLabel>Plan Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Basic Plan" {...field} />
+                      <Input placeholder="Master Plan" {...field} />
                     </FormControl>
                     <FormDescription>The display name for this plan.</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="interval"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Billing Interval</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select interval" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="month">Monthly</SelectItem>
-                        <SelectItem value="year">Yearly</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormDescription>How often customers are billed.</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -160,77 +120,16 @@ export function PlanForm({ initialData }: PlanFormProps) {
                   <FormLabel>Description</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="A simple plan for small teams just getting started..."
+                      placeholder="The standard plan with full access..."
                       className="resize-none"
                       {...field}
                     />
                   </FormControl>
-                  <FormDescription>Optional description shown to customers.</FormDescription>
+                  <FormDescription>Optional description for internal reference.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
-            <div className="grid gap-6 md:grid-cols-3">
-              <FormField
-                control={form.control}
-                name="amount"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Amount (USD)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        placeholder="9.99"
-                        {...field}
-                        onChange={(e) => field.onChange(e.target.valueAsNumber)}
-                      />
-                    </FormControl>
-                    <FormDescription>Price in dollars (e.g., 9.99).</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="trialDays"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Trial Days</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        min="0"
-                        max="365"
-                        placeholder="0"
-                        {...field}
-                        onChange={(e) => field.onChange(e.target.valueAsNumber)}
-                      />
-                    </FormControl>
-                    <FormDescription>Number of trial days offered.</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="currency"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Currency</FormLabel>
-                    <FormControl>
-                      <Input {...field} maxLength={3} />
-                    </FormControl>
-                    <FormDescription>3-letter currency code (e.g., usd).</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
 
             <div className="grid gap-6 md:grid-cols-3">
               <FormField
@@ -379,40 +278,6 @@ export function PlanForm({ initialData }: PlanFormProps) {
               </div>
             </div>
 
-            <div className="space-y-4 border-t pt-6">
-              <h3 className="text-lg font-medium">Integration IDs</h3>
-              <div className="grid gap-6 md:grid-cols-2">
-                <FormField
-                  control={form.control}
-                  name="stripeProductId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Stripe Product ID</FormLabel>
-                      <FormControl>
-                        <Input placeholder="prod_..." {...field} />
-                      </FormControl>
-                      <FormDescription>Stripe product identifier (optional).</FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="stripePriceId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Stripe Price ID</FormLabel>
-                      <FormControl>
-                        <Input placeholder="price_..." {...field} />
-                      </FormControl>
-                      <FormDescription>Stripe price identifier (optional).</FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
           </CardContent>
           <CardFooter className="flex justify-between">
             <Button variant="outline" type="button" onClick={() => router.back()} disabled={isSubmitting}>
@@ -427,4 +292,4 @@ export function PlanForm({ initialData }: PlanFormProps) {
       </form>
     </Form>
   );
-}
+}

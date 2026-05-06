@@ -1,4 +1,10 @@
+import { NextResponse } from 'next/server';
+import { db } from '@/lib/db/drizzle';
+import { teamMembers } from '@/lib/db/schema';
+import { eq, and } from 'drizzle-orm';
+import { getUser } from '@/lib/db/queries';
 import { logger } from '@/lib/logger';
+import { TeamRole, MemberPermissions, ROLE_PRESETS } from '@/lib/permissions';
 
 export async function PUT(request: Request) {
   try {

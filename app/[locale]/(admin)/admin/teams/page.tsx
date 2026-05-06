@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { DeleteTeamButton } from './delete-team-button';
-import { AssignPlanSelect } from './assign-plan';
 
 export default async function AdminTeamsPage() {
   const teams = await getAllTeams();
@@ -27,8 +26,6 @@ export default async function AdminTeamsPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
-                <TableHead>Plan</TableHead>
-                <TableHead>Status</TableHead>
                 <TableHead>Created</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -37,21 +34,6 @@ export default async function AdminTeamsPage() {
               {teams.map((team) => (
                 <TableRow key={team.id}>
                   <TableCell className="font-medium">{team.name}</TableCell>
-                  <TableCell>
-                    <AssignPlanSelect
-                      teamId={team.id}
-                      currentPlanId={team.planId}
-                      plans={allPlans}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Badge 
-                      variant={team.subscriptionStatus === 'active' ? 'default' : 'outline'}
-                      className={team.subscriptionStatus === 'active' ? 'bg-green-600' : ''}
-                    >
-                      {team.subscriptionStatus || 'Inactive'}
-                    </Badge>
-                  </TableCell>
                   <TableCell className="text-muted-foreground text-xs">
                     {new Date(team.createdAt).toLocaleDateString()}
                   </TableCell>

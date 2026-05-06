@@ -81,7 +81,7 @@ export async function GET(request: NextRequest) {
       }
     } catch (err: any) {
       if (err.code === 21452) {
-        return NextResponse.json({ numbers: [], pricePerNumber: config.pricePerNumber });
+        return NextResponse.json({ numbers: [] });
       }
       throw err;
     }
@@ -108,7 +108,6 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       numbers: available,
-      pricePerNumber: config.pricePerNumber,
     });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Unknown error';

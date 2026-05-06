@@ -13,7 +13,6 @@ import {
   Phone, 
   Send,
   FileText,
-  CreditCard
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
@@ -27,7 +26,6 @@ const navItems = [
   { href: '/automation', icon: Zap, labelKey: 'automation' },
   { href: '/calls', icon: Phone, labelKey: 'calls' },
   { href: '/analytics', icon: BarChart3, labelKey: 'analytics' },
-  { href: '/pricing', icon: CreditCard, labelKey: 'billing' },
   { href: '/settings', icon: Settings, labelKey: 'settings' },
 ];
 

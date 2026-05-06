@@ -60,37 +60,9 @@ export async function getUser() {
 }
 
 
-export async function getPublishedPlans() {
-  return await db.select().from(plans).orderBy(plans.amount);
-}
 
-export async function getTeamByStripeCustomerId(customerId: string) {
-  const result = await db
-    .select()
-    .from(teams)
-    .where(eq(teams.stripeCustomerId, customerId))
-    .limit(1);
 
-  return result.length > 0 ? result[0] : null;
-}
 
-export async function updateTeamSubscription(
-  teamId: number,
-  subscriptionData: {
-    stripeSubscriptionId: string | null;
-    stripeProductId: string | null;
-    planName: string | null;
-    subscriptionStatus: string;
-  }
-) {
-  await db
-    .update(teams)
-    .set({
-      ...subscriptionData,
-      updatedAt: new Date()
-    })
-    .where(eq(teams.id, teamId));
-}
 
 export async function getUserWithTeam(userId: number) {
   const result = await db
@@ -128,15 +100,7 @@ export async function getActivityLogs() {
     .limit(10);
 }
 
-export async function getFreePlan() {
-  const result = await db
-    .select()
-    .from(plans)
-    .where(eq(plans.amount, 0))
-    .limit(1);
 
-  return result[0] || null;
-}
 
 export async function getTeamForUser() {
   const user = await getUser();

@@ -24,19 +24,13 @@ export type ActionState<T = null> =
 export async function getAdminStats() {
   const [userCount] = await db.select({ count: count() }).from(users);
   const [teamCount] = await db.select({ count: count() }).from(teams);
-  const [activeSubs] = await db
-    .select({ count: count() })
-    .from(teams)
-    .where(eq(teams.subscriptionStatus, 'active'));
-
   return {
     users: userCount.count,
     teams: teamCount.count,
-    activeSubscriptions: activeSubs.count,
   };
 }
 
-export async function getAllUsers(filters: UsersFilters = {}) {
+export async function getAllUsers(filters: Partial<UsersFilters> = {}) {
   const validatedFilters = UsersFiltersSchema.parse(filters);
   const { search, role, teamId, page, perPage } = validatedFilters;
   const offset = (page - 1) * perPage;
@@ -111,9 +105,6 @@ export async function getAllTeams() {
     .select({
       id: teams.id,
       name: teams.name,
-      planId: teams.planId,
-      planName: teams.planName,
-      subscriptionStatus: teams.subscriptionStatus,
       createdAt: teams.createdAt,
       memberCount: count(users.id),
     })
@@ -136,13 +127,4 @@ export async function getRecentActivity() {
     .leftJoin(users, eq(activityLogs.userId, users.id))
     .orderBy(desc(activityLogs.timestamp))
     .limit(20);
-}
-
-export async function getAllPlans() {
-  return await db.select().from(plans).orderBy(desc(plans.createdAt));
-}
-
-export async function getPlanById(id: number) {
-  const result = await db.select().from(plans).where(eq(plans.id, id));
-  return result[0] || null;
 }

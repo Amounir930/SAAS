@@ -145,12 +145,11 @@
     "calls": "Calls",
     "settings": "Settings",
     "analytics": "Analytics",
-    "billing": "Billing",
     "sign_out": "Sign out",
     "toggle_theme": "Toggle theme"
   },
   "Pricing": {
-    "manage_billing": "Manage billing & invoices",
+    "manage_billing": "Manage invoices",
     "offline_title": "Offline Payment",
     "offline_desc": "Contact support to complete the payment.",
     "offline_plan": "Plan",

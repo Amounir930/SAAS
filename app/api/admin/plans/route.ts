@@ -17,8 +17,8 @@ const PlanSchema = z.object({
   isAiEnabled: z.boolean().default(false),
   isFlowBuilderEnabled: z.boolean().default(false),
   status: z.enum(['published', 'draft']).default('draft'),
-  stripeProductId: z.string().nullable().optional(),
-  stripePriceId: z.string().nullable().optional(),
+  stripeProductId: z.string().default(''),
+  stripePriceId: z.string().default(''),
 });
 
 export async function GET() {

@@ -25,9 +25,7 @@ const schema = z.object({
   BASE_URL: z.string().url("BASE_URL must be a valid URL (e.g., http://localhost:3000)"),
   AUTH_SECRET: z.string().min(32, "AUTH_SECRET must be at least 32 characters for security"),
   
-  // Payment Gateways
-  STRIPE_SECRET_KEY: z.string().min(1, "STRIPE_SECRET_KEY is required"),
-  STRIPE_WEBHOOK_SECRET: z.string().min(1, "STRIPE_WEBHOOK_SECRET is required"),
+
   
   // Communication
   RESEND_API_KEY: z.string().min(1, "RESEND_API_KEY is required"),

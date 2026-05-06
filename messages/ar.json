@@ -85,12 +85,11 @@
     "calls": "المكالمات",
     "settings": "الإعدادات",
     "analytics": "التحليلات",
-    "billing": "الفوترة",
     "sign_out": "تسجيل الخروج",
     "toggle_theme": "تبديل السمة"
   },
   "Pricing": {
-    "manage_billing": "إدارة الفواتير والاشتراكات",
+    "manage_billing": "إدارة الفواتير",
     "offline_title": "الدفع غير المتصل",
     "offline_desc": "تواصل مع الدعم لإكمال عملية الدفع.",
     "offline_plan": "الخطة",
@@ -492,7 +491,7 @@
       "title_part1": "أتمتة واتسابك",
       "title_part2": "المبيعات والدعم",
       "subtitle": "قم بدمج الدردشات، أنشئ تدفقات أتمتة، ووسع عملك باستخدام منصة CRM والذكاء الاصطناعي المتكاملة. لا حاجة للبرمجة.",
-      "cta_primary": "ابدأ التجربة المجانية",
+      "cta_primary": "ابدأ الآن",
       "cta_secondary": "عرض الميزات"
     },
     "preview": {
@@ -541,8 +540,8 @@
     "cta_final": {
       "title": "هل أنت مستعد لإحداث ثورة في دعمك؟",
       "subtitle": "انضم إلى آلاف الشركات التي تستخدم منصتنا لأتمتة المحادثات والنمو بسرعة.",
-      "button": "ابدأ تجربتك المجانية لمدة 7 أيام",
-      "disclaimer": "لا يلزم بطاقة ائتمان للتجربة."
+      "button": "ابدأ الآن",
+      "disclaimer": ""
     },
     "footer": {
       "terms": "الشروط",
@@ -865,16 +864,16 @@
   },
   "Settings": {
     "team_title": "إعدادات الفريق",
-    "subscription_title": "اشتراك الفريق",
-    "current_plan": "الخطة الحالية",
-    "upgrade_btn": "ترقية الخطة",
-    "change_plan_btn": "تغيير الخطة",
-    "billing_portal": "بوابة الفواتير",
-    "trial_active": "الفترة التجريبية نشطة",
-    "trial_ends": "تنتهي الفترة التجريبية في {date}",
-    "canceled": "ملغي",
+    "subscription_title": "معلومات مساحة العمل",
+    "current_plan": "الإصدار",
+    "upgrade_btn": "إصدار لايت (Lite)",
+    "change_plan_btn": "إصدار لايت (Lite)",
+    "billing_portal": "البوابة",
+    "trial_active": "الحالة",
+    "trial_ends": "",
+    "canceled": "غير نشط",
     "active": "نشط",
-    "free_plan": "الخطة المجانية",
+    "free_plan": "لايت",
     "members_title": "أعضاء الفريق",
     "no_members": "لا يوجد أعضاء في الفريق بعد.",
     "remove_btn": "إزالة",

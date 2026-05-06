@@ -18,16 +18,16 @@ const UpdatePlanSchema = z.object({
   isAiEnabled: z.boolean().optional(),
   isFlowBuilderEnabled: z.boolean().optional(),
   status: z.enum(['published', 'draft']).optional(),
-  stripeProductId: z.string().nullable().optional(),
-  stripePriceId: z.string().nullable().optional(),
+  stripeProductId: z.string().optional(),
+  stripePriceId: z.string().optional(),
 });
 
 export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id: idStr } = await params;
   try {
-    const { id: idStr } = await params;
     const id = parseInt(idStr);
     
     if (isNaN(id)) {
@@ -75,8 +75,8 @@ export async function DELETE(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id: idStr } = await params;
   try {
-    const { id: idStr } = await params;
     const id = parseInt(idStr);
 
     if (isNaN(id)) {

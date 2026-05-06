@@ -116,7 +116,7 @@ export function logAutomationSession(params: BaseLogParams & {
 }
 
 export function logAIInteraction(params: BaseLogParams & {
-  eventType: 'ai_request' | 'ai_response' | 'ai_tool_call' | 'ai_handover' | 'ai_response_sent';
+  eventType: 'ai_request' | 'ai_response' | 'ai_tool_call' | 'ai_handover' | 'ai_response_sent' | 'ai_error';
   input?: any;
   output?: any;
   metadata?: any;

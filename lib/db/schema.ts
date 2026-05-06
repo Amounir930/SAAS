@@ -76,46 +76,14 @@ export const channelConfigs = pgTable('channel_configs', {
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
 
-export const paymentGateways = pgTable('payment_gateways', {
-  id: serial('id').primaryKey(),
-  gateway: varchar('gateway', { length: 30 }).notNull(),
-  displayName: varchar('display_name', { length: 100 }).notNull(),
-  publicKey: text('public_key').notNull(),
-  secretKey: text('secret_key').notNull(),
-  webhookSecret: text('webhook_secret'),
-  isActive: boolean('is_active').notNull().default(false),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at').notNull().defaultNow(),
-});
 
-export const offlinePaymentRequests = pgTable('offline_payment_requests', {
-  id: serial('id').primaryKey(),
-  teamId: integer('team_id').notNull().references(() => teams.id, { onDelete: 'cascade' }),
-  planId: integer('plan_id').notNull().references(() => plans.id, { onDelete: 'cascade' }),
-  amount: integer('amount').notNull(),
-  currency: varchar('currency', { length: 3 }).notNull().default('usd'),
-  status: varchar('status', { length: 20 }).notNull().default('pending'),
-  notes: text('notes'),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at').notNull().defaultNow(),
-});
 
 export const plans = pgTable('plans', {
   id: serial('id').primaryKey(),
   name: varchar('name', { length: 100 }).notNull(),
   description: text('description'),
 
-  gatewayId: integer('gateway_id').references(() => paymentGateways.id, { onDelete: 'set null' }),
-  gatewayProductId: text('gateway_product_id'),
-  gatewayPriceId: text('gateway_price_id'),
 
-
-  stripeProductId: text('stripe_product_id').notNull().default(''),
-  stripePriceId: text('stripe_price_id').notNull().default(''),
-  amount: integer('amount').notNull().default(0),
-  currency: varchar('currency', { length: 3 }).notNull().default('usd'),
-  interval: varchar('interval', { length: 20 }).notNull().default('month'),
-  trialDays: integer('trial_days').notNull().default(0),
 
   maxUsers: integer('max_users').notNull().default(1),
   maxContacts: integer('max_contacts').notNull().default(1000),
@@ -137,16 +105,6 @@ export const teams = pgTable('teams', {
   planId: integer('plan_id').references(() => plans.id),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
-  stripeCustomerId: text('stripe_customer_id').unique(),
-  stripeSubscriptionId: text('stripe_subscription_id').unique(),
-  stripeProductId: text('stripe_product_id'),
-  gatewayType: varchar('gateway_type', { length: 30 }),
-  gatewayCustomerId: text('gateway_customer_id'),
-  gatewaySubscriptionId: text('gateway_subscription_id'),
-  planName: varchar('plan_name', { length: 50 }),
-  subscriptionStatus: varchar('subscription_status', { length: 20 }),
-  isCanceled: boolean('is_canceled').default(false),
-  trialEndsAt: timestamp('trial_ends_at'),
 });
 
 export const teamMembers = pgTable('team_members', {
@@ -601,12 +559,8 @@ export const apiKeysRelations = relations(apiKeys, ({ one }) => ({
   }),
 }));
 
-export const plansRelations = relations(plans, ({ one, many }) => ({
+export const plansRelations = relations(plans, ({ many }) => ({
   teams: many(teams),
-  gateway: one(paymentGateways, {
-    fields: [plans.gatewayId],
-    references: [paymentGateways.id],
-  }),
 }));
 
 export const aiToolsRelations = relations(aiTools, ({ one }) => ({
@@ -927,10 +881,6 @@ export const twilioConfigs = pgTable('twilio_configs', {
   apiKeySid: text('api_key_sid').notNull(),
   apiKeySecret: text('api_key_secret').notNull(),
   twimlAppSid: text('twiml_app_sid'),
-  creditPricePerPack: integer('credit_price_per_pack').notNull().default(1000),
-  creditsPerPack: integer('credits_per_pack').notNull().default(50),
-  pricePerNumber: integer('price_per_number').notNull().default(1000),
-  paymentGatewayId: integer('payment_gateway_id').references(() => paymentGateways.id, { onDelete: 'set null' }),
   currency: varchar('currency', { length: 3 }).default('usd'),
   isActive: boolean('is_active').notNull().default(false),
   createdAt: timestamp('created_at').notNull().defaultNow(),
@@ -945,7 +895,7 @@ export const teamPhoneNumbers = pgTable('team_phone_numbers', {
   phoneNumber: varchar('phone_number', { length: 20 }).notNull(),
   twilioPhoneSid: text('twilio_phone_sid'),
   friendlyName: varchar('friendly_name', { length: 100 }),
-  stripeSubscriptionId: text('stripe_subscription_id'),
+
   isActive: boolean('is_active').notNull().default(true),
   createdAt: timestamp('created_at').notNull().defaultNow(),
 });
@@ -998,7 +948,7 @@ export const callCreditTransactions = pgTable('call_credit_transactions', {
   description: text('description'),
   callLogId: integer('call_log_id')
     .references(() => callLogs.id, { onDelete: 'set null' }),
-  stripePaymentIntentId: text('stripe_payment_intent_id'),
+
   createdAt: timestamp('created_at').notNull().defaultNow(),
 }, (table) => ({
   teamIdIdx: index('call_credit_tx_team_id_idx').on(table.teamId),

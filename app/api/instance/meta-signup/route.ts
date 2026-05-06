@@ -3,7 +3,7 @@ import { getTeamForUser, getUser } from '@/lib/db/queries';
 import { db } from '@/lib/db/drizzle';
 import { evolutionInstances, ActivityType } from '@/lib/db/schema';
 import { logActivity } from '@/lib/db/activity';
-import { enforceLimit } from '@/lib/limits';
+
 import { isPluginInstalled } from '@/lib/plugins/registry';
 import { isChannelActive, getMetaCloudConfig } from '@/lib/whatsapp/config';
 
@@ -26,11 +26,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    try {
-      await enforceLimit(team.id, 'instances');
-    } catch (e: any) {
-      return NextResponse.json({ error: e.message }, { status: 403 });
-    }
+
 
     const { exchangeToken, instanceName } = await request.json();
 

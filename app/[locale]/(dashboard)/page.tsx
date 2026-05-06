@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { getPublishedPlans, getTeamForUser } from '@/lib/db/queries';
+import { getTeamForUser } from '@/lib/db/queries';
 import { getBranding } from '@/lib/db/queries/branding';
 import Logo from '@/components/interface/Logo';
 import { getTranslations } from 'next-intl/server'; 
@@ -164,7 +164,7 @@ function DashboardPreview({ t }: { t: any }) {
 
 function LogoCarousel({ t }: { t: any }) {
   const logos = [
-    "WhatsApp", "Meta", "Twilio", "Stripe", "OpenAI", "Evolution"
+    "WhatsApp", "Meta", "Twilio", "OpenAI", "Evolution"
   ];
 
   return (
@@ -199,7 +199,7 @@ export default async function HomePage() {
   
   const t = await getTranslations(); 
   
-  const plans = await getPublishedPlans();
+
   const branding = await getBranding();
   const siteName = branding?.name || 'WhatSaaS';
 
@@ -294,70 +294,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section id="pricing" className="py-24 bg-muted/30 border-t border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">{t('LandingPage.pricing.title')}</h2>
-            <p className="text-muted-foreground text-lg">
-              {t('LandingPage.pricing.subtitle')}
-            </p>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {plans.map((plan, index) => {
-              const isPopular = index === 1;
-              return (
-                <div 
-                  key={plan.id} 
-                  className={`relative flex flex-col p-8 rounded-2xl border bg-card transition-all duration-300 hover:shadow-xl ${isPopular ? 'border-primary shadow-lg shadow-primary/10 scale-105 z-10' : 'border-border'}`}
-                >
-                  {isPopular && (
-                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-full shadow-sm">
-                      {t('LandingPage.pricing.most_popular')}
-                    </div>
-                  )}
-                  <h3 className="text-xl font-semibold mb-2">{plan.name}</h3>
-                  <div className="flex items-baseline gap-1 mb-6">
-                    <span className="text-4xl font-bold">${plan.amount / 100}</span>
-                    <span className="text-muted-foreground">/{plan.interval === 'month' ? t('LandingPage.pricing.interval_month') : t('LandingPage.pricing.interval_year')}</span>
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-6 min-h-[40px]">{plan.description || "Perfect for getting started."}</p>
-                  
-                  <ul className="space-y-3 mb-8 flex-1">
-                    <li className="flex items-center text-sm gap-3">
-                        <CheckCircle2 className="h-4 w-4 text-primary shrink-0" /> {t('LandingPage.pricing.features.users', {count: plan.maxUsers})}
-                    </li>
-                    <li className="flex items-center text-sm gap-3">
-                        <CheckCircle2 className="h-4 w-4 text-primary shrink-0" /> {t('LandingPage.pricing.features.connections', {count: plan.maxInstances})}
-                    </li>
-                    <li className="flex items-center text-sm gap-3">
-                        <CheckCircle2 className="h-4 w-4 text-primary shrink-0" /> {t('LandingPage.pricing.features.contacts', {count: plan.maxContacts.toLocaleString()})}
-                    </li>
-                    {plan.isAiEnabled && (
-                        <li className="flex items-center text-sm gap-3">
-                            <CheckCircle2 className="h-4 w-4 text-primary shrink-0" /> {t('LandingPage.pricing.features.ai')}
-                        </li>
-                    )}
-                    {plan.isFlowBuilderEnabled && (
-                        <li className="flex items-center text-sm gap-3">
-                            <CheckCircle2 className="h-4 w-4 text-primary shrink-0" /> {t('LandingPage.pricing.features.flow')}
-                        </li>
-                    )}
-                  </ul>
-
-                  <Link href={`/sign-up?priceId=${plan.stripePriceId}`}>
-                    <Button 
-                        className={`w-full rounded-full h-11 text-sm font-semibold ${isPopular ? 'bg-primary hover:bg-primary/90' : 'bg-secondary hover:bg-secondary/80 text-foreground'}`}
-                    >
-                      {t('LandingPage.pricing.get_started')}
-                    </Button>
-                  </Link>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
 
       <section className="py-24">
         <div className="max-w-4xl mx-auto px-4 text-center">

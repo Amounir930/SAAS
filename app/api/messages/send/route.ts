@@ -20,7 +20,7 @@ type ActionState<T = null> =
 async function createInternalMessage(
   chatId: number,
   input: SendMessageInput,
-  teamId: string
+  teamId: number
 ): Promise<ActionState<{ id: string; chatId: number; text: string; timestamp: string }>> {
   const internalId = `internal_${Date.now()}`;
   const now = new Date();
@@ -60,7 +60,7 @@ async function createInternalMessage(
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
-  let teamId: string | undefined;
+  let teamId: number | undefined;
 
   try {
     const rawBody = await request.text();
@@ -156,7 +156,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
 
     const sendResult = await sendTextViaProvider({
-      instanceId: input.instanceId || null,
+      instanceId: input.instanceId || undefined,
       recipientJid: input.recipientJid,
       text: finalText,
       teamId: team.id,
@@ -168,7 +168,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         {
           success: false,
           error: sendResult.error || 'Failed to dispatch message',
-          code: sendResult.code || 'PROVIDER_ERROR',
+          code: 'PROVIDER_ERROR',
         },
         { status: 500 }
       );
@@ -178,7 +178,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({
       success: true,
       data: {
-        messageId: sendResult.data.messageId,
+        messageId: sendResult.messageId,
         text: finalText,
         timestamp: new Date().toISOString(),
       },

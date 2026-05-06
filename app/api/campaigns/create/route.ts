@@ -8,7 +8,7 @@ import { logger } from '@/lib/logger';
 
 const CampaignLeadSchema = z.object({
   phone: z.string().min(1).max(50),
-  variables: z.record(z.any()).optional(),
+  variables: z.record(z.string(), z.any()).optional(),
 });
 
 const CampaignCreateSchema = z.object({
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
     const validatedData = CampaignCreateSchema.safeParse(body);
     
     if (!validatedData.success) {
-      return NextResponse.json({ error: validatedData.error.errors[0].message }, { status: 400 });
+      return NextResponse.json({ error: validatedData.error.issues[0].message }, { status: 400 });
     }
 
     const { name, instanceId, scheduledAt, templateId, leads, createContacts } = validatedData.data;

@@ -29,8 +29,6 @@ import {
 type TriggerType =
   | "new_lead"
   | "new_order"
-  | "payment_failed"
-  | "subscription_canceled"
   | "custom_webhook";
 
 type ActionType =
@@ -72,7 +70,7 @@ const en: Dictionary = {
   description:
     "Define a trigger and action to automate recurring workflows in your workspace.",
   name: "Automation name",
-  namePlaceholder: "e.g. Follow up failed payment",
+  namePlaceholder: "e.g. Follow up new lead",
   details: "Details (optional)",
   detailsPlaceholder: "Add context for your team…",
   trigger: "Trigger",
@@ -84,8 +82,6 @@ const en: Dictionary = {
   triggerOptions: {
     new_lead: "New lead created",
     new_order: "New order received",
-    payment_failed: "Payment failed",
-    subscription_canceled: "Subscription canceled",
     custom_webhook: "Custom webhook event",
   },
   actionOptions: {
@@ -102,7 +98,7 @@ const ar: Dictionary = {
   title: "إنشاء أتمتة جديدة",
   description: "حدّد المشغّل والإجراء لأتمتة المهام المتكررة في مساحة العمل.",
   name: "اسم الأتمتة",
-  namePlaceholder: "مثال: متابعة فشل الدفع",
+  namePlaceholder: "مثال: متابعة عميل جديد",
   details: "تفاصيل (اختياري)",
   detailsPlaceholder: "أضف ملاحظات لفريقك…",
   trigger: "المشغّل",
@@ -114,8 +110,6 @@ const ar: Dictionary = {
   triggerOptions: {
     new_lead: "عند إنشاء عميل محتمل جديد",
     new_order: "عند استلام طلب جديد",
-    payment_failed: "عند فشل الدفع",
-    subscription_canceled: "عند إلغاء الاشتراك",
     custom_webhook: "حدث Webhook مخصص",
   },
   actionOptions: {

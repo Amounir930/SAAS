@@ -38,12 +38,7 @@ function UserMenu() {
   if (!user) {
     return (
       <>
-        <Link
-          href="/#pricing"
-          className="text-sm font-medium text-muted-foreground hover:text-foreground"
-        >
-          Pricing
-        </Link>
+
         <Button asChild className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground">
           <Link href="/sign-up">Sign Up</Link>
         </Button>
@@ -132,15 +127,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   
   const { data: team } = useSWR('/api/team', fetcher);
 
-  /*
-  useEffect(() => {
-    if (team && typeof team === 'object' && 'id' in team && !team.planId) {
-      if (!isHomePage && !pathname.startsWith('/pricing')) {
-        router.push('/pricing');
-      }
-    }
-  }, [team, pathname, isHomePage, router]);
-  */
+
 
   if (isHomePage) {
     return (

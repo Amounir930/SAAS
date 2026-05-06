@@ -37,13 +37,6 @@ export async function GET() {
       })),
       creditsBalance: credits?.balance ?? 0,
       voiceEnabled: !!config,
-      pricing: config
-        ? {
-            creditPricePerPack: config.creditPricePerPack,
-            creditsPerPack: config.creditsPerPack,
-            pricePerNumber: config.pricePerNumber,
-          }
-        : null,
     });
   } catch (error: any) {
     console.error('[Settings Twilio GET]', error.message);

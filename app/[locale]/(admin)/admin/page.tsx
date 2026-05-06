@@ -1,7 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getAdminStats, getRecentActivity } from '@/lib/db/admin-queries';
-import { Users, Building2, CreditCard, Activity } from 'lucide-react';
-import { PendingPayments } from './PendingPayments';
+import { Users, Building2, Activity } from 'lucide-react';
 
 export default async function AdminDashboardPage() {
   const stats = await getAdminStats();
@@ -11,7 +10,7 @@ export default async function AdminDashboardPage() {
     <div className="space-y-8">
       <h1 className="text-3xl font-bold">Admin Overview</h1>
       
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Users</CardTitle>
@@ -30,18 +29,9 @@ export default async function AdminDashboardPage() {
             <div className="text-2xl font-bold">{stats.teams}</div>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Subscriptions</CardTitle>
-            <CreditCard className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.activeSubscriptions}</div>
-          </CardContent>
-        </Card>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-[1fr_300px]">
+      <div className="grid gap-6">
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
@@ -65,8 +55,6 @@ export default async function AdminDashboardPage() {
             </div>
           </CardContent>
         </Card>
-
-        <PendingPayments />
       </div>
     </div>
   );

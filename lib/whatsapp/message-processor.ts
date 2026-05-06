@@ -17,7 +17,7 @@ export const IncomingMessageSchema = z.object({
   pushName: z.string().optional(),
   instanceId: z.number().int(),
   teamId: z.number().int(),
-  mediaDetails: z.record(z.any()).optional(),
+  mediaDetails: z.record(z.string(), z.any()).optional(),
   participant: z.string().optional(),
 });
 

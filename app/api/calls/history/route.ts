@@ -10,8 +10,8 @@ export const dynamic = 'force-dynamic';
 
 const querySchema = z.object({
   chatId: z.string().regex(/^\d+$/).transform(Number).optional(),
-  page: z.string().regex(/^\d+$/).transform(Number).default('1'),
-  limit: z.string().regex(/^\d+$/).transform(Number).default('20'),
+  page: z.coerce.number().default(1),
+  limit: z.coerce.number().default(20),
 });
 
 export async function GET(req: NextRequest) {

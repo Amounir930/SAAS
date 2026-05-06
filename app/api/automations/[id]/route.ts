@@ -75,7 +75,7 @@ export async function PATCH(
     const validatedData = automationUpdateSchema.safeParse(body);
     
     if (!validatedData.success) {
-      return NextResponse.json({ error: validatedData.error.errors[0].message }, { status: 400 });
+      return NextResponse.json({ error: validatedData.error.issues[0].message }, { status: 400 });
     }
 
     const [updated] = await db

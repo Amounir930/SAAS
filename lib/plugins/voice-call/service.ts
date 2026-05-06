@@ -357,17 +357,15 @@ export async function addCredits(teamId: number, amount: number, paymentIntentId
       amount,
       type: amount > 0 ? 'purchase' : 'usage',
       description: description || (amount > 0 ? 'Credit purchase' : 'Call usage'),
-      stripePaymentIntentId: paymentIntentId,
       createdAt: new Date()
     });
   });
 }
 
-export async function provisionPhoneNumber(teamId: number, phoneNumber: string, subscriptionId?: string) {
+export async function provisionPhoneNumber(teamId: number, phoneNumber: string) {
   await db.insert(teamPhoneNumbers).values({
     teamId,
     phoneNumber,
-    stripeSubscriptionId: subscriptionId,
     isActive: true,
     createdAt: new Date()
   });

@@ -98,8 +98,7 @@ export async function POST(request: Request) {
         where: eq(evolutionInstances.instanceName, instanceName),
         columns: {
             id: true,
-            teamId: true,
-            status: true
+            teamId: true
         }
     });
 

@@ -32,10 +32,10 @@ import { Input } from '@/components/ui/input';
 import {
   Phone,
   Loader2,
-  CreditCard,
   ShoppingCart,
   PhoneCall,
   Search,
+  LayoutDashboard,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
@@ -51,7 +51,6 @@ export default function VoiceSettingsPage() {
   );
 
   const [isLoading, setIsLoading] = useState(true);
-  const [isPurchasing, setIsPurchasing] = useState<number | null>(null);
   const [showNumberModal, setShowNumberModal] = useState(false);
   const [availableNumbers, setAvailableNumbers] = useState<any[]>([]);
   const [loadingNumbers, setLoadingNumbers] = useState(false);
@@ -62,13 +61,8 @@ export default function VoiceSettingsPage() {
 
   const [myNumbers, setMyNumbers] = useState<any[]>([]);
   const [creditsBalance, setCreditsBalance] = useState(0);
-  const [pricing, setPricing] = useState<{
-    creditPricePerPack: number;
-    creditsPerPack: number;
-    pricePerNumber: number;
-  } | null>(null);
 
-  const { data: creditsData, mutate: mutateCredits } = useSWR('/api/calls/credits', fetcher);
+  const { data: creditsData } = useSWR('/api/calls/credits', fetcher);
 
   useEffect(() => {
     if (!isFeatureLoading && featureData && !featureData.hasAccess) {
@@ -95,7 +89,6 @@ export default function VoiceSettingsPage() {
       if (settingsRes.ok) {
         const settingsData = await settingsRes.json();
         setCreditsBalance(settingsData.creditsBalance ?? 0);
-        setPricing(settingsData.pricing ?? null);
       }
     } catch (e) {
       console.error(e);
@@ -144,7 +137,7 @@ export default function VoiceSettingsPage() {
     loadAvailableNumbers(selectedCountry, type, searchPrefix);
   };
 
-  const handlePurchaseNumber = async (phoneNumber: string) => {
+  const handleRequestNumber = async (phoneNumber: string) => {
     setPurchasingNumber(phoneNumber);
     try {
       const res = await fetch('/api/calls/numbers/purchase', {
@@ -155,45 +148,17 @@ export default function VoiceSettingsPage() {
 
       if (!res.ok) {
         const errData = await res.json();
-        throw new Error(errData.error || 'Failed to purchase number');
+        throw new Error(errData.error || 'Failed to request number');
       }
 
-      const data = await res.json();
-      if (data.url) {
-        window.location.href = data.url;
-      }
+      toast.success(t('voice_number_requested_toast'));
+      setShowNumberModal(false);
+      loadTeamVoiceData();
     } catch (error: any) {
       toast.error(error.message || t('voice_number_purchase_error'));
     } finally {
       setPurchasingNumber(null);
     }
-  };
-
-  const handlePurchaseCredits = async (packs: number) => {
-    setIsPurchasing(packs);
-    try {
-      const res = await fetch('/api/calls/credits/purchase', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ packs }),
-      });
-      if (!res.ok) throw new Error();
-      const data = await res.json();
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        toast.success(t('credits_purchased'));
-        mutateCredits();
-      }
-    } catch {
-      toast.error(t('credits_purchase_error'));
-    } finally {
-      setIsPurchasing(null);
-    }
-  };
-
-  const formatCents = (cents: number) => {
-    return `$${(cents / 100).toFixed(2)}`;
   };
 
   if (isLoading || isFeatureLoading || !featureData?.hasAccess) {
@@ -221,7 +186,6 @@ export default function VoiceSettingsPage() {
       </div>
 
       <div className="space-y-6">
-        {}
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
@@ -289,7 +253,6 @@ export default function VoiceSettingsPage() {
           </CardContent>
         </Card>
 
-        {}
         <Dialog open={showNumberModal} onOpenChange={setShowNumberModal}>
           <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
             <DialogHeader>
@@ -297,7 +260,6 @@ export default function VoiceSettingsPage() {
               <DialogDescription>{t('voice_available_numbers_desc')}</DialogDescription>
             </DialogHeader>
 
-            {}
             <div className="space-y-3 mb-4">
               <div className="flex items-center gap-2">
                 <Select value={selectedCountry} onValueChange={handleCountryChange}>
@@ -340,12 +302,6 @@ export default function VoiceSettingsPage() {
                     <SelectItem value="mobile">Mobile</SelectItem>
                   </SelectContent>
                 </Select>
-
-                {pricing && (
-                  <p className="text-sm text-muted-foreground ml-auto">
-                    {formatCents(pricing.pricePerNumber)}/mo
-                  </p>
-                )}
               </div>
 
               <div className="flex items-center gap-2">
@@ -396,22 +352,19 @@ export default function VoiceSettingsPage() {
                         {num.capabilities?.mms && (
                           <Badge variant="outline" className="text-[10px] px-1 py-0">MMS</Badge>
                         )}
-                        {num.addressRequirements !== 'none' && (
-                          <Badge variant="secondary" className="text-[10px] px-1 py-0">{t('voice_address_required')}</Badge>
-                        )}
                       </div>
                     </div>
                     <Button
                       size="sm"
                       disabled={purchasingNumber !== null}
-                      onClick={() => handlePurchaseNumber(num.phoneNumber)}
+                      onClick={() => handleRequestNumber(num.phoneNumber)}
                     >
                       {purchasingNumber === num.phoneNumber ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
                         <>
-                          <ShoppingCart className="mr-1 h-3 w-3" />
-                          {t('voice_buy_btn')}
+                          <Phone className="mr-1 h-3 w-3" />
+                          {t('voice_request_btn')}
                         </>
                       )}
                     </Button>
@@ -426,15 +379,14 @@ export default function VoiceSettingsPage() {
           </DialogContent>
         </Dialog>
 
-        {}
         <Card>
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
-              <CreditCard className="h-4 w-4" /> {t('voice_credits_title')}
+              <LayoutDashboard className="h-4 w-4" /> {t('voice_credits_title')}
             </CardTitle>
             <CardDescription>{t('voice_credits_desc')}</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent>
             <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
               <div>
                 <p className="text-sm text-muted-foreground">{t('voice_current_balance')}</p>
@@ -442,41 +394,8 @@ export default function VoiceSettingsPage() {
               </div>
               <span className="text-sm text-muted-foreground">{t('voice_credits_unit')}</span>
             </div>
-
-            {pricing && (
-              <div>
-                <p className="text-sm font-medium mb-3">{t('voice_purchase_credits')}</p>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  {[1, 5, 10].map((packs) => (
-                    <button
-                      key={packs}
-                      onClick={() => handlePurchaseCredits(packs)}
-                      disabled={isPurchasing !== null}
-                      className="flex flex-col items-center gap-1 p-4 border rounded-lg hover:bg-muted/50 hover:border-primary/30 transition-colors disabled:opacity-50"
-                    >
-                      {isPurchasing === packs ? (
-                        <Loader2 className="h-5 w-5 animate-spin" />
-                      ) : (
-                        <>
-                          <span className="text-lg font-bold">
-                            {packs * pricing.creditsPerPack}
-                          </span>
-                          <span className="text-xs text-muted-foreground">
-                            {t('voice_credits_unit')}
-                          </span>
-                          <span className="text-sm font-medium text-primary">
-                            {formatCents(packs * pricing.creditPricePerPack)}
-                          </span>
-                        </>
-                      )}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
           </CardContent>
         </Card>
-
       </div>
     </section>
   );

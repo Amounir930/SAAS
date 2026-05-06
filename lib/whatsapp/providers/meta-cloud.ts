@@ -54,13 +54,13 @@ const SendInteractivePayloadSchema = z.object({
     text: z.string().max(60)
   }).optional(),
   footer: z.object({ text: z.string().max(60) }).optional(),
-  action: z.record(z.any()).optional(),
+  action: z.record(z.string(), z.any()).optional(),
 });
 
 const SendTemplatePayloadSchema = z.object({
   templateName: z.string().regex(/^[a-zA-Z0-9_]+$/),
   language: z.string().length(2),
-  components: z.array(z.record(z.any())).optional(),
+  components: z.array(z.record(z.string(), z.any())).optional(),
 });
 
 /**

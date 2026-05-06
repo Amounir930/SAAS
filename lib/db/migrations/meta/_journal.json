@@ -8,6 +8,13 @@
       "when": 1776126162795,
       "tag": "0000_jittery_luminals",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1778024910648,
+      "tag": "0001_yellow_human_fly",
+      "breakpoints": true
     }
   ]
 }
